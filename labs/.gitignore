@@ -1,5 +1,9 @@
 __pycache__/
+bin/
+lib/
+lib64
 logs/
 *.npz
 *.xz
 *.zip
+pyvenv.cfg

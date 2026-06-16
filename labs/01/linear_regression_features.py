@@ -21,29 +21,40 @@ def main(args: argparse.Namespace) -> list[float]:
     # Create artificial noisy data.
     xs = np.linspace(0, 7, num=args.data_size)
     ys = np.sin(xs) + np.random.RandomState(args.seed).normal(0, 0.2, size=args.data_size)
+    fs = None
 
     rmses = []
+
     for order in range(1, args.range + 1):
         # TODO: Create features `(x^1, x^2, ..., x^order)`, preferably in this ordering.
         # Note that you can just append `x^order` to the features from the previous iteration.
-        ...
+
+        fs = xs.reshape((xs.size, 1)) if fs is None else np.c_[fs, xs ** order]
 
         # TODO: Split the data into a train set and a test set.
         # Use `sklearn.model_selection.train_test_split` method call, passing
         # arguments `test_size=args.test_size, random_state=args.seed`.
-        ...
+
+        train_data, test_data = sklearn.model_selection.train_test_split(
+            fs, test_size=args.test_size, random_state=args.seed)
+
+        train_target, test_target = sklearn.model_selection.train_test_split(
+            ys, test_size=args.test_size, random_state=args.seed)
 
         # TODO: Fit a linear regression model using `sklearn.linear_model.LinearRegression`;
         # consult the documentation and see especially the `fit` method.
-        model = ...
+
+        model = sklearn.linear_model.LinearRegression().fit(train_data, train_target)
 
         # TODO: Predict targets on the test set using the `predict` method of the trained model.
-        ...
+
+        ps = model.predict(test_data)
 
         # TODO: Compute root mean square error on the test set predictions.
         # You can either do it manually, or you can look at the metrics offered
         # by the `sklearn.metrics` module.
-        rmse = ...
+
+        rmse = sklearn.metrics.root_mean_squared_error(test_target, ps)
 
         rmses.append(rmse)
 

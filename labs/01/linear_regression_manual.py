@@ -15,6 +15,7 @@ parser.add_argument("--test_size", default=0.1, type=lambda x: int(x) if x.isdig
 
 def main(args: argparse.Namespace) -> float:
     # Load the diabetes dataset.
+
     dataset = sklearn.datasets.load_diabetes()
 
     # The input data are in `dataset.data`, targets are in `dataset.target`.
@@ -24,25 +25,33 @@ def main(args: argparse.Namespace) -> float:
 
     # TODO: Append a constant feature with value 1 to the end of all input data.
     # Then we do not need to explicitly represent bias - it becomes the last weight.
-    ...
+    
+    source = np.column_stack([dataset.data, np.ones(dataset.data.shape[0])])
 
     # TODO: Split the dataset into a train set and a test set.
     # Use `sklearn.model_selection.train_test_split` method call, passing
     # arguments `test_size=args.test_size, random_state=args.seed`.
-    ...
+
+    x1, x2 = sklearn.model_selection.train_test_split(
+        source, test_size=args.test_size, random_state=args.seed)
+
+    t1, t2 = sklearn.model_selection.train_test_split(
+        dataset.target, test_size=args.test_size, random_state=args.seed)
 
     # TODO: Solve the linear regression using the algorithm from the lecture,
     # explicitly computing the matrix inverse (using `np.linalg.inv`).
-    ...
+
+    w = np.linalg.inv(np.matrix.transpose(x1) @ x1) @ np.matrix.transpose(x1) @ t1
 
     # TODO: Predict target values on the test set.
-    ...
+
+    p2 = x2 @ w
 
     # TODO: Manually compute root mean square error on the test set predictions.
-    rmse = ...
+
+    rmse = np.sqrt(sum((p2 - t2) ** 2) / x2.shape[0])
 
     return rmse
-
 
 if __name__ == "__main__":
     main_args = parser.parse_args([] if "__file__" not in globals() else None)
